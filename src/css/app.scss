@@ -1,17 +1,28 @@
 // app global css in SCSS form
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100..900&display=swap');
 
-/* 互動類型專案可以啟用下面的設定
-// user-select-none 避免文字反白、圖片被選擇
-body {
-  -webkit-user-select: none; // Safari
-  -moz-user-select: none; // Firefox
-  -ms-user-select: none; // IE10+/Edge
-  user-select: none; // 標準語法
+* {
+  font-family: 'Noto Sans TC', sans-serif;
+  line-height: 1.5;
+  letter-spacing: 0.1em;
 }
-// disable pinch zoom
-html { touch-action:none; }
-// disable 上下頁手勢
-html, body { overscroll-behavior: none; }
-*/
 
+h2 {
+  font-size: 24px;
+  font-weight: 700;
+}
+h3 {
+  font-size: 20px;
+  font-weight: 700;
+}
+p {
+  font-size: 14px;
+}
 
+.q-tabs__content--align-justify .q-tab {
+  flex: 0 1 auto;
+}
+
+.q-intersection > div {
+  height: 100%;
+}

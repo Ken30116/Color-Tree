@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Panzoom Example</title>
+    <style>
+      body,
+      html {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      #main-view {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        position: relative;
+        background: #000; /* Optional: to visualize the area that is hidden */
+      }
+
+      #main-svg {
+        width: 10000%; /* 100x zoom */
+        height: 10000%; /* 100x zoom */
+        display: block;
+        position: absolute; /* Ensure it is positioned correctly within #main-view */
+      }
+
+      #thumbnail {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        width: 150px;
+        height: 150px;
+        border: 2px solid black;
+        overflow: hidden;
+        cursor: pointer;
+        background-color: #fff;
+      }
+
+      #thumbnail img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      #view-box {
+        position: absolute;
+        border: 2px solid red;
+        pointer-events: none;
+        box-sizing: border-box;
+        background: rgba(255, 0, 0, 0.2); /* Optional: visualizing the view box */
+      }
+    </style>
+  </head>
+  <body>
+    <div id="main-view">
+      <img id="main-svg" src="123.svg" alt="Main SVG" />
+      <div id="view-box"></div>
+    </div>
+    <div id="thumbnail">
+      <img src="123.svg" alt="Thumbnail" />
+    </div>
+    <script src="https://unpkg.com/@panzoom/panzoom/dist/panzoom.min.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const mainSvg = document.getElementById('main-svg');
+        const thumbnail = document.getElementById('thumbnail');
+        const viewBox = document.getElementById('view-box');
+
+        // 初始化 Panzoom，設置100x放大
+        const panzoom = Panzoom(mainSvg, {
+          maxScale: 100,
+          minScale: 100, // 固定100倍
+          contain: 'outside',
+          disablePan: true, // 禁止拖動，僅允許點擊縮略圖移動
+        });
+
+        // 計算view-box的尺寸，與主視圖的螢幕窗口尺寸對應
+        function updateViewBox() {
+          const scale = panzoom.getScale();
+
+          const thumbnailWidth = thumbnail.clientWidth;
+          const thumbnailHeight = thumbnail.clientHeight;
+
+          const viewBoxWidth = (window.innerWidth / (mainSvg.naturalWidth * 100)) * thumbnailWidth;
+          const viewBoxHeight =
+            (window.innerHeight / (mainSvg.naturalHeight * 100)) * thumbnailHeight;
+
+          viewBox.style.width = `${viewBoxWidth}px`;
+          viewBox.style.height = `${viewBoxHeight}px`;
+
+          const { x, y } = panzoom.getPan();
+          const mainWidth = mainSvg.naturalWidth * 100;
+          const mainHeight = mainSvg.naturalHeight * 100;
+
+          viewBox.style.left = `${(-x / mainWidth) * thumbnailWidth}px`;
+          viewBox.style.top = `${(-y / mainHeight) * thumbnailHeight}px`;
+        }
+
+        // 當縮略圖被點擊時移動主視窗和view-box
+        thumbnail.addEventListener('click', function (event) {
+          const rect = thumbnail.getBoundingClientRect();
+          const clickX = event.clientX - rect.left;
+          const clickY = event.clientY - rect.top;
+
+          const mainWidth = mainSvg.naturalWidth * 100;
+          const mainHeight = mainSvg.naturalHeight * 100;
+          const thumbnailWidth = thumbnail.clientWidth;
+          const thumbnailHeight = thumbnail.clientHeight;
+
+          // 計算view-box的尺寸
+          const viewBoxWidth = (window.innerWidth / (mainSvg.naturalWidth * 100)) * thumbnailWidth;
+          const viewBoxHeight =
+            (window.innerHeight / (mainSvg.naturalHeight * 100)) * thumbnailHeight;
+
+          // 計算view-box應該放置的位置
+          viewBox.style.width = `${viewBoxWidth}px`;
+          viewBox.style.height = `${viewBoxHeight}px`;
+          viewBox.style.left = `${clickX - viewBoxWidth / 2}px`;
+          viewBox.style.top = `${clickY - viewBoxHeight / 2}px`;
+
+          // 計算主視圖應該移動到的位置
+          const viewBoxLeft = (clickX / thumbnailWidth) * mainWidth - window.innerWidth / 2;
+          const viewBoxTop = (clickY / thumbnailHeight) * mainHeight - window.innerHeight / 2;
+
+          // 更新主視圖位置
+          panzoom.pan(-viewBoxLeft, -viewBoxTop);
+        });
+
+        // 當視圖移動時更新縮略圖上的視窗框
+        mainSvg.addEventListener('panzoompan', updateViewBox);
+
+        // 初始化视窗框位置
+        updateViewBox();
+
+        // 监听窗口大小变化，以更新view-box尺寸
+        window.addEventListener('resize', updateViewBox);
+      });
+    </script>
+  </body>
+</html>
