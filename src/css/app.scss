@@ -1,0 +1,28 @@
+// app global css in SCSS form
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100..900&display=swap');
+
+* {
+  font-family: 'Noto Sans TC', sans-serif;
+  line-height: 1.5;
+  letter-spacing: 0.1em;
+}
+
+h2 {
+  font-size: 24px;
+  font-weight: 700;
+}
+h3 {
+  font-size: 20px;
+  font-weight: 700;
+}
+p {
+  font-size: 14px;
+}
+
+.q-tabs__content--align-justify .q-tab {
+  flex: 0 1 auto;
+}
+
+.q-intersection > div {
+  height: 100%;
+}
